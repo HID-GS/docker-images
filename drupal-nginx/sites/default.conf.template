@@ -3,7 +3,7 @@ server {
     listen [::]:80;
 
     server_name localhost;
-    root {{ getenv "NGINX_SERVER_ROOT" "/var/www/html/" }};
+    root ${NGINX_SERVER_ROOT};
 
     location = /favicon.ico {
         log_not_found off;

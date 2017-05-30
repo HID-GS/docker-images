@@ -1,9 +1,12 @@
 FROM nginx:alpine
 
 ADD nginx.conf /etc/nginx/
-COPY sites/*.conf /etc/nginx/sites-available/
+COPY sites/*.conf.template /etc/nginx/templates/
+COPY init/entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
 
 ARG PHP_UPSTREAM=php
+ENV NGINX_SERVER_ROOT=/var/www/html
 
 RUN apk update \
     && apk upgrade \
@@ -13,6 +16,5 @@ RUN apk update \
     && rm /etc/nginx/conf.d/default.conf \
     && echo "upstream php-upstream { server ${PHP_UPSTREAM}:9000; }" > /etc/nginx/conf.d/upstream.conf
 
-CMD ["nginx"]
-
+ENTRYPOINT ["/entrypoint.sh"]
 EXPOSE 80 443
