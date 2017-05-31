@@ -13,7 +13,7 @@ RUN set -ex \
 		--with-freetype-dir=/usr/include/ \
 		--with-jpeg-dir=/usr/include/ \
 		--with-png-dir=/usr/include/ \
-	&& docker-php-ext-install -j "$(nproc)" gd mbstring opcache pdo pdo_mysql pdo_pgsql sockets zip \
+	&& docker-php-ext-install -j "$(nproc)" gd mbstring opcache pdo pdo_mysql pdo_pgsql redis sockets zip \
 	&& runDeps="$( \
 		scanelf --needed --nobanner --recursive \
 			/usr/local/lib/php/extensions \
