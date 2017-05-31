@@ -13,7 +13,7 @@ RUN set -ex \
 		--with-freetype-dir=/usr/include/ \
 		--with-jpeg-dir=/usr/include/ \
 		--with-png-dir=/usr/include/ \
-	&& docker-php-ext-install -j "$(nproc)" gd mbstring opcache pdo pdo_mysql pdo_pgsql zip \
+	&& docker-php-ext-install -j "$(nproc)" gd mbstring opcache pdo pdo_mysql pdo_pgsql sockets zip \
 	&& runDeps="$( \
 		scanelf --needed --nobanner --recursive \
 			/usr/local/lib/php/extensions \
@@ -22,6 +22,7 @@ RUN set -ex \
 			| xargs -r apk info --installed \
 			| sort -u \
 	)" \
+
 	&& apk add --virtual .drupal-phpexts-rundeps $runDeps \
 	&& apk del .build-deps
 
