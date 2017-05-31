@@ -25,7 +25,9 @@ RUN set -ex \
 
 	&& apk add --virtual .drupal-phpexts-rundeps $runDeps \
 	&& apk del .build-deps
-
+//Redis
+RUN pecl install redis-3.1.0 \
+    && docker-php-ext-enable redis
 # set recommended PHP.ini settings
 # see https://secure.php.net/manual/en/opcache.installation.php
 RUN { \
