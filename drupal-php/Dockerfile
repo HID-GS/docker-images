@@ -18,8 +18,6 @@ RUN set -ex \
 		--with-png-dir=/usr/include/ \
 	&& docker-php-ext-install -j "$(nproc)" gd mbstring opcache pdo pdo_mysql pdo_pgsql sockets zip \
 	&& pecl install redis \
-	&& addgroup -g 48 -S www-data \
-	&& adduser -G www-data -D -H -u 48 -s /bin/bash www-data \
 	&& runDeps="$( \
 		scanelf --needed --nobanner --recursive \
 			/usr/local/lib/php/extensions \
@@ -29,6 +27,8 @@ RUN set -ex \
 			| sort -u \
 	)" \
   && docker-php-ext-enable redis \
+	&& addgroup -g 48 -S nginx \
+  && adduser -G nginx -D -H -u 48 -s /bin/bash nginx \
 	&& apk add --virtual .drupal-phpexts-rundeps $runDeps \
 	&& apk del .build-deps autoconf build-base
 
