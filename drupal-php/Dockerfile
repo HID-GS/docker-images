@@ -18,6 +18,8 @@ RUN set -ex \
 		--with-png-dir=/usr/include/ \
 	&& docker-php-ext-install -j "$(nproc)" gd mbstring opcache pdo pdo_mysql pdo_pgsql sockets zip \
 	&& pecl install redis \
+	&& addgroup -g 48 -S www-data \
+	&& adduser -G www-data -D -H -u 48 -s /bin/bash www-data \
 	&& runDeps="$( \
 		scanelf --needed --nobanner --recursive \
 			/usr/local/lib/php/extensions \
@@ -29,7 +31,7 @@ RUN set -ex \
   && docker-php-ext-enable redis \
 	&& apk add --virtual .drupal-phpexts-rundeps $runDeps \
 	&& apk del .build-deps autoconf build-base
-	    
+
 # set recommended PHP.ini settings
 # see https://secure.php.net/manual/en/opcache.installation.php
 RUN { \
