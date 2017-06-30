@@ -2,6 +2,7 @@ FROM jenkinsci/jenkins:alpine
 USER root
 RUN apk update && apk add --update --no-cache \
 		php7 \
+		php7-ctype \
 		php7-dom \
 		php7-fpm \
 		php7-json \
