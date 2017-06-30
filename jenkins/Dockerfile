@@ -8,6 +8,7 @@ RUN apk update && apk add --update --no-cache \
 		php7-iconv \
 		php7-mbstring \
 		php7-openssl \
+		php7-pdo \
 		php7-phar \
 		php7-zip \
 		php7-zlib && \
