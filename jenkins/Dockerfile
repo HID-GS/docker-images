@@ -10,7 +10,10 @@ RUN apk update && apk add --update --no-cache \
 		php7-mbstring \
 		php7-openssl \
 		php7-pdo \
+		php7-pear \
 		php7-phar \
+		php7-xdebug \
+		php7-xml \
 		php7-zip \
 		php7-zlib && \
 		ln -s /usr/bin/php7 /usr/bin/php
