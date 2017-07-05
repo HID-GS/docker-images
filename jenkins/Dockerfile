@@ -1,6 +1,8 @@
 FROM jenkinsci/jenkins:alpine
 USER root
 RUN apk update && apk add --update --no-cache \
+		docker \
+		openrc \
 		php7 \
 		php7-ctype \
 		php7-dom \
@@ -19,7 +21,16 @@ RUN apk update && apk add --update --no-cache \
 		ln -s /usr/bin/php7 /usr/bin/php
 RUN { \
 				echo 'zend_extension=xdebug.so'; \
-		} > /etc/php7/conf.d/xdebug.ini
+		} > /etc/php7/conf.d/xdebug.ini && \
+		{ \
+				echo 'opcache.enable=1'; \
+				echo 'display_errors=1'; \
+				echo 'display_startup_errors=1'; \
+				echo 'error_log=/var/log/php_errors.log'; \
+				echo 'log_errors=1'; \
+				echo 'error_reporting=E_ALL'; \
+		} > /etc/php7/conf.d/development.ini
+RUN rc-update add docker boot
 RUN php7 -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" && \
 		php7 -r "if (hash_file('SHA384', 'composer-setup.php') === \
 		'669656bab3166a7aff8a7506b8cb2d1c292f042046c5a994c43155c0be6190fa0355160742ab2e1c88d40d5be660b410') \
