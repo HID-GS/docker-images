@@ -23,7 +23,7 @@ RUN { \
 				echo 'zend_extension=xdebug.so'; \
 				echo 'xdebug.force_display_errors=1'; \
 				echo 'xdebug.force_error_reporting=1'; \
-				echo 'xdebug.show_error_trace=1' \
+				echo 'xdebug.show_error_trace=1'; \
 		} > /etc/php7/conf.d/xdebug.ini && \
 		{ \
 				echo 'opcache.enable=1'; \
