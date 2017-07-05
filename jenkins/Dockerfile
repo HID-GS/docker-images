@@ -1,6 +1,6 @@
 FROM jenkinsci/jenkins:alpine
 USER root
-RUN apk update && apk add --update --no-cache \
+RUN apk update && apk upgrade && apk add --update --no-cache \
 		docker \
 		openrc \
 		php7 \
