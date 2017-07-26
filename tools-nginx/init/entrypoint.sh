@@ -7,10 +7,7 @@ for file in {.,}*;
 do
   if ping -c 1 ${file%.conf.*} &> /dev/null
 	then
-	echo $file
-    cp ${file%.conf.*} ${file}.conf
-  else
-    echo $file
+    cp ${file} ${file%.tpl}
 	fi
 done
 # Start nginx
