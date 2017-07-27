@@ -1,4 +1,4 @@
-FROM jenkinsci/jenkins:alpine
+FROM jenkins/jenkins:alpine
 USER root
 RUN apk update && apk upgrade && apk add --update --no-cache \
 		docker \
@@ -41,5 +41,6 @@ RUN php7 -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" &
 		php7 composer-setup.php && \
 		php7 -r "unlink('composer-setup.php');" && \
 		mv composer.phar  /usr/local/bin/composer
+USER jenkins
 COPY plugins.txt /usr/share/jenkins/ref/plugins.txt
 RUN /usr/local/bin/install-plugins.sh < /usr/share/jenkins/ref/plugins.txt
