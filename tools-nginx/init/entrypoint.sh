@@ -26,7 +26,7 @@ while [ 1 -eq 1 ]; do
     config=$(echo $template | sed 's/.tpl//g')
     host=$(echo $template | sed 's/.conf.tpl//g')
     ping -c 1 $host &> /dev/null
-    if [ $? -eq 1 ]; then
+    if [ $? -eq 0 ]; then
       if [ !-f $config ]; then
         echo "detected new working host $host, adding it to nginx"
         cp $template $config
