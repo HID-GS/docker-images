@@ -13,7 +13,7 @@ done
 # Start nginx
 nginx
 
-while [ 1 -eq 1]; do
+while [ 1 -eq 1 ]; do
 
   read -t 60
 
