@@ -11,7 +11,7 @@ do
   fi
 done
 # Start nginx
-nginx
+nginx -g "daemon off"
 
 while [ 1 -eq 1]; do
 
