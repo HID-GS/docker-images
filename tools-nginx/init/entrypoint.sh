@@ -3,10 +3,10 @@ cd /etc/nginx/conf.d
 # Delete old configs
 find . -type f -name '*.conf' -delete
 # Generate new configs from templates
-for file in $(ls);
+for file in $(ls *.conf.tpl);
 do
-  if ping -c 1 ${file%.conf.*} &> /dev/null
-  then
+  ping -c 1 ${file%.conf.tpl} &> /dev/null
+  if [ $? -eq 0 ]; then
     echo "found ${file%.conf.*}"
     cp ${file} ${file%.tpl}
   else
