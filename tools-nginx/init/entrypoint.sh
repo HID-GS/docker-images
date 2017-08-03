@@ -31,6 +31,13 @@ while [ 1 -eq 1 ]; do
         echo "detected new working host $host, adding it to nginx"
         cp $template $config
         restart=1
+      else
+        diff $config $template &> /dev/null
+        if [ $? -ne 0 ]; then
+          echo "detected configuration changes on $host, will tell nginx to restart"
+          cp $template $config
+          restart=1
+        fi
       fi
     else
       if [ -f $config ]; then
