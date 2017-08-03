@@ -25,11 +25,13 @@ while [ 1 -eq 1 ]; do
     ping -c 1 $host &> /dev/null
     if [ $? -eq 1 ]; then
       if [ !-f $config ]; then
+        echo "detected new working host $host, adding it to nginx"
         cp $template $config
         restart=1
       fi
     else
       if [ -f $config ]; then
+        echo "detected failed host $host, removing it to nginx"
         rm $config
         restart=1
       fi
@@ -37,6 +39,7 @@ while [ 1 -eq 1 ]; do
   done
 
   if [ $restart -eq 1 ]; then
+    echo 'changes detected, reloading nginx'
     #restart nginx
     nginx -s reload
   fi
