@@ -11,7 +11,7 @@ do
   fi
 done
 # Start nginx
-nginx -g "daemon off"
+nginx
 
 while [ 1 -eq 1]; do
 
@@ -28,9 +28,11 @@ while [ 1 -eq 1]; do
         cp $template $config
         restart=1
       fi
-    else if [ -f $config ]; then
-      rm $config
-      restart=1
+    else
+      if [ -f $config ]; then
+        rm $config
+        restart=1
+      fi
     fi
   done
 
