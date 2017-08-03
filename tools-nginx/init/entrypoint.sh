@@ -15,7 +15,7 @@ nginx
 
 while [ 1 -eq 1 ]; do
 
-  read -t 60
+  sleep 60
 
   restart=0
 
