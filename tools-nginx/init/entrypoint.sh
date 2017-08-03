@@ -5,9 +5,12 @@ find . -type f -name '*.conf' -delete
 # Generate new configs from templates
 for file in {.,}*;
 do
-  if ping -c 1 ${file%.conf.*} &> /dev/null
+  if ping -c 1 $(ls) &> /dev/null
   then
+    echo "found ${file%.conf.*}"
     cp ${file} ${file%.tpl}
+  else
+    echo "${file%conf.*} not found"
   fi
 done
 # Start nginx
@@ -31,7 +34,7 @@ while [ 1 -eq 1 ]; do
       fi
     else
       if [ -f $config ]; then
-        echo "detected failed host $host, removing it to nginx"
+        echo "detected failed host $host, removing it from nginx"
         rm $config
         restart=1
       fi
