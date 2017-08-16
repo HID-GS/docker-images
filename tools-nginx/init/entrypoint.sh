@@ -1,9 +1,16 @@
 #!/usr/bin/env sh
 cd /etc/nginx/conf.d
 
+# stagger process between multiple servers
+sleep $(bc -l <<< "$RANDOM/10000")
 
 # Delete old configs
-find . -type f -name '*.conf' -delete
+find . -type f -name '*.conf' | while read file; do
+  if [ ! -f $file.tpl ]; then
+    rm $file
+  fi
+done
+
 # Generate new configs from templates
 
 for file in $(ls *.conf.tpl);
@@ -28,6 +35,7 @@ while [ 1 -eq 1 ]; do
 
   echo "rechecking nginx stanzas"
 
+  # create control variable
   restart=0
 
   ls *.conf.tpl | while read template; do
