@@ -142,7 +142,7 @@ touch_status_file() {
 ##### common functions END   #####
 
 # stagger process between multiple servers
-sleep $(bc -l <<< "$RANDOM/10000")
+sleep $(echo "$RANDOM/10000" | bc -l)
 log_text "Starting nginx"
 
 # Start nginx
