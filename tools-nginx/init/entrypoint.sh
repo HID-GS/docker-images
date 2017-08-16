@@ -35,7 +35,7 @@ while [ 1 -eq 1 ]; do
     template_time=$(stat -c %Z $template)
     if [ $current_time -lt $template_time ]; then
       echo "detected changed template $template"
-      current_time=$(date +%s)
+      file_changed=1
     fi
     
     # If files are changed, flag a restart
