@@ -40,7 +40,7 @@ generate_configs() {
     semaphore_start
     delete_old_configs
 
-    ls *.conf.tpl | while read template; do
+    ls *.conf.tpl 2> /dev/null | while read template; do
     
       # Setup basic control variables
       config=${template%.tpl}
@@ -133,7 +133,7 @@ touch_status_file() {
   fi
 
   # Create and touch ours
-  if [ ! -f ${status_file}]; then
+  if [ ! -f ${status_file} ]; then
     log_text "Creating ${status_file}"
   fi
   touch ${status_file}
