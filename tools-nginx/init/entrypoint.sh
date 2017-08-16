@@ -128,6 +128,7 @@ touch_status_file() {
       find ./${status_root}* -mtime +1 | while read status; do
         log_text "Cleaning up old status file - $status"
         rm $status
+      done
     fi
   fi
 
