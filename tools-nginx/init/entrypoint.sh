@@ -47,6 +47,7 @@ generate_configs() {
 
       if [ "${config:0:5}" == "host." ]; then
         host=${config:5}
+        host=${host%.conf}
         ping -c 1 $host &> /dev/null
         if [ $? -eq 0 ]; then
           if [ ! -f $config ]; then
@@ -65,7 +66,7 @@ generate_configs() {
           if [ -f $config ]; then
             log_text "detected failed host $host, removing it from nginx"
             rm $config
-            flag_restart "host down $config"
+            flag_restart "host down $host"
           fi
         fi
       else
