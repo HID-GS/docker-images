@@ -4,25 +4,45 @@ cd /etc/nginx/conf.d
 # stagger process between multiple servers
 sleep $(bc -l <<< "$RANDOM/10000")
 
-# Delete old configs
-find . -type f -name '*.conf' | while read file; do
-  if [ ! -f $file.tpl ]; then
-    rm $file
-  fi
-done
+##### common functions START #####
+
+# Common log function
+log_text() {
+  now=$(date "+%Y/%m/%d %H:%M:%S")
+  echo "$now - $@"
+}
+
+# Delete old configs that no longer have template files
+delete_old_configs() {
+  find . -type f -name '*.conf' | while read file; do
+    if [ ! -f $file.tpl ]; then
+      rm $file
+    fi
+  done
+}
 
 # Generate new configs from templates
+generate_configs() {
+  delete_old_configs
 
-for file in $(ls *.conf.tpl);
-do
-  ping -c 1 ${file%.conf.tpl} &> /dev/null
-  if [ $? -eq 0 ]; then
-    echo "found ${file%.conf.*}"
-    cp ${file} ${file%.tpl}
-  else
-    echo "${file%conf.*} not found"
-  fi
-done
+  for file in $(ls *.conf.tpl);
+  do
+    # if this is a host definition RP, check it
+    if [ "${file:0:5}" == "host." ]; then
+      ping -c 1 ${file%.conf.tpl} &> /dev/null
+      if [ $? -eq 0 ]; then
+        echo "found ${file%.conf.*}"
+        cp ${file} ${file%.tpl}
+      else
+        echo "${file%conf.*} not found"
+      fi
+    fi
+  done
+}
+
+##### common functions END   #####
+
+
 
 # Start nginx
 nginx
