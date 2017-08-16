@@ -147,7 +147,7 @@ while [ 1 -eq 1 ]; do
 
   sleep 60
 
-  echo "rechecking nginx stanzas"
+  log_text "rechecking nginx stanzas"
 
   # create control variable
   generate_configs
