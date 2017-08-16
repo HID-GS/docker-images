@@ -35,52 +35,64 @@ delete_old_configs() {
 
 # Generate new configs from templates
 generate_configs() {
-  delete_old_configs
+  touch_status_file
+  if [ ! -f ${semaphore} ]; then
+    semaphore_start
+    delete_old_configs
 
-  ls *.conf.tpl | while read template; do
-  
-    # Setup basic control variables
-    config=${template%.tpl}
+    ls *.conf.tpl | while read template; do
+    
+      # Setup basic control variables
+      config=${template%.tpl}
 
-    if [ "${config:0:5}" == "host." ]; then
-      host=${config:5}
-      ping -c 1 $host &> /dev/null
-      if [ $? -eq 0 ]; then
-        if [ ! -f $config ]; then
-          log_text "detected new working host $host, adding it to nginx"
-          cp $template $config
-          flag_restart "host up $config"
-        else
-          diff $config $template &> /dev/null
-          if [ $? -ne 0 ]; then
-            log_text "detected configuration changes on $host, will tell nginx to restart"
+      if [ "${config:0:5}" == "host." ]; then
+        host=${config:5}
+        ping -c 1 $host &> /dev/null
+        if [ $? -eq 0 ]; then
+          if [ ! -f $config ]; then
+            log_text "detected new working host $host, adding it to nginx"
             cp $template $config
-            flag_restart "change in $config"
+            flag_restart "host up $config"
+          else
+            diff $config $template &> /dev/null
+            if [ $? -ne 0 ]; then
+              log_text "detected configuration changes on $host, will tell nginx to restart"
+              cp $template $config
+              flag_restart "change in $config"
+            fi
+          fi
+        else
+          if [ -f $config ]; then
+            log_text "detected failed host $host, removing it from nginx"
+            rm $config
+            flag_restart "host down $config"
           fi
         fi
       else
-        if [ -f $config ]; then
-          log_text "detected failed host $host, removing it from nginx"
-          rm $config
-          flag_restart "host down $config"
+        if [ ! -f $config ]; then
+          log_text "detected new configuration $config, enabling it" 
+          cp $template $config
+          flag_restart "new $config"
         fi
       fi
-    else
-      if [ ! -f $config ]; then
-        log_text "detected new configuration $config, enabling it" 
-        cp $template $config
-        flag_restart "new $config"
-      fi
-    fi
 
-  done
+    done
+    semaphore_stop
+  else
+    while [ -f ${semaphore} ]; do
+      log_text "semaphore file detected, waiting of it to go away before"
+      sleep 5
+    done
+    log_text "semaphore file is gone, proceeding..."
+  fi
 
   # If a restart is flagged, restart nginx
   if [ $(cat ${status_file} | wc -l) -gt 0 ]; then
     echo 'changes detected, reloading nginx'
     #restart nginx
     nginx -s reload
-    restart=0
+    # reset status file
+    > ${status_file}
   fi
 }
 
@@ -100,20 +112,23 @@ semaphore_stop() {
   fi
 }
 
-# Clean up old entries on first run
-first_run() {
+# Upkeep of status file
+touch_status_file() {
+
+  # Clean up old files
   if [ ! -f ${semaphore} ]; then
     if [ -f ${status_root}_* ]; then
-      find ./${status_root}* -mtime +30 | while read status; do
+      find ./${status_root}* -mtime +1 | while read status; do
         log_text "Cleaning up old status file - $status"
         rm $status
     fi
   fi
-  
+
+  # Create and touch ours
   if [ ! -f ${status_file}]; then
     log_text "Creating ${status_file}"
-    touch ${status_file}
   fi
+  touch ${status_file}
 }
 
 ##### common functions END   #####
@@ -125,7 +140,7 @@ log_text "Starting nginx"
 # Start nginx
 nginx
 
-first_run
+touch_status_file
 
 # Monitor files for changes
 while [ 1 -eq 1 ]; do
