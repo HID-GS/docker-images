@@ -73,6 +73,13 @@ generate_configs() {
           log_text "detected new configuration $config, enabling it" 
           cp $template $config
           flag_restart "new $config"
+        else
+          diff $config $template &> /dev/null
+          if [ $? -ne 0 ]; then
+            log_text "detected configuration changes on $config, will tell nginx to restart"
+            cp $template $config
+            flag_restart "change in $config"
+          fi
         fi
       fi
 
