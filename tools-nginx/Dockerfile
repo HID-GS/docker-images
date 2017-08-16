@@ -1,5 +1,5 @@
 FROM nginx:alpine
-RUN apk update && apk add --no-cache bash curl
+RUN apk update && apk add --no-cache bash curl bc
 ADD init/nginx.conf /etc/nginx/
 COPY init/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
