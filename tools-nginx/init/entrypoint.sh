@@ -1,8 +1,11 @@
 #!/usr/bin/env sh
 cd /etc/nginx/conf.d
+
+
 # Delete old configs
 find . -type f -name '*.conf' -delete
 # Generate new configs from templates
+
 for file in $(ls *.conf.tpl);
 do
   ping -c 1 ${file%.conf.tpl} &> /dev/null
@@ -13,11 +16,10 @@ do
     echo "${file%conf.*} not found"
   fi
 done
+
 # Start nginx
 nginx
 
-# Get current time
-current_time=$(date +%s)
 
 # Monitor files for changes
 while [ 1 -eq 1 ]; do
@@ -27,25 +29,9 @@ while [ 1 -eq 1 ]; do
   echo "rechecking nginx stanzas"
 
   restart=0
-  file_changed=0
 
   ls *.conf.tpl | while read template; do
   
-    # If the file is changed, flag a restart
-    template_time=$(stat -c %Z $template)
-    if [ $current_time -lt $template_time ]; then
-      echo "detected changed template $template"
-      file_changed=1
-    fi
-    
-    # If files are changed, flag a restart
-    if [ $file_changed -ne 0 ]; then
-      echo "files changed, flagging a restart"
-      file_changed=0
-      current_time=$(date +%s)
-      restart=1
-     fi
-    
     # If a file is added or removed, flag a restart
     # If a host status changed, flag a restart
     config=$(echo $template | sed 's/.tpl//g')
@@ -71,13 +57,15 @@ while [ 1 -eq 1 ]; do
         restart=1
       fi
     fi
-  done
 
-  # If a restart is flagged, restart nginx
-  if [ $restart -eq 1 ]; then
-    echo 'changes detected, reloading nginx'
-    #restart nginx
-    nginx -s reload
-  fi
+    # If a restart is flagged, restart nginx
+    if [ $restart -eq 1 ]; then
+      echo 'changes detected, reloading nginx'
+      #restart nginx
+      nginx -s reload
+      restart=0
+    fi
+
+  done
 
 done
