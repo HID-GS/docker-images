@@ -17,8 +17,8 @@ log_text() {
 # Flag restart of all running nginx instances
 flag_restart() {
   ls ${status_root}_* | while read file; do
-    echo $1 >> $file
-    log_text "Flagging a restart - $1"
+    echo "$@" >> $file
+    log_text "Restart flagged - $@"
   done
 }
 
@@ -28,6 +28,7 @@ delete_old_configs() {
     if [ ! -f $file.tpl ]; then
       log_text "Removing templateless configuration $file"
       rm $file
+      flag_restart "removed $config"
     fi
   done
 }
@@ -48,38 +49,39 @@ generate_configs() {
         if [ ! -f $config ]; then
           log_text "detected new working host $host, adding it to nginx"
           cp $template $config
-          restart=1
+          flag_restart "host up $config"
         else
           diff $config $template &> /dev/null
           if [ $? -ne 0 ]; then
             log_text "detected configuration changes on $host, will tell nginx to restart"
             cp $template $config
-            restart=1
+            flag_restart "change in $config"
           fi
         fi
       else
         if [ -f $config ]; then
           log_text "detected failed host $host, removing it from nginx"
           rm $config
-          restart=1
+          flag_restart "host down $config"
         fi
       fi
     else
       if [ ! -f $config ]; then
         log_text "detected new configuration $config, enabling it" 
         cp $template $config
+        flag_restart "new $config"
       fi
     fi
 
-    # If a restart is flagged, restart nginx
-    if [ $restart -eq 1 ]; then
-      echo 'changes detected, reloading nginx'
-      #restart nginx
-      nginx -s reload
-      restart=0
-    fi
-
   done
+
+  # If a restart is flagged, restart nginx
+  if [ $(cat ${status_file} | wc -l) -gt 0 ]; then
+    echo 'changes detected, reloading nginx'
+    #restart nginx
+    nginx -s reload
+    restart=0
+  fi
 }
 
 # Create semaphore file
