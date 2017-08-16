@@ -6,7 +6,7 @@ cd /etc/nginx/conf.d
 # Common log function
 log_text() {
   now=$(date "+%Y/%m/%d %H:%M:%S")
-  echo "$now - $@"
+  echo "$now - $(hostname) - $@"
 }
 
 # Delete old configs that no longer have template files
@@ -74,7 +74,7 @@ generate_configs() {
 
 # stagger process between multiple servers
 sleep $(bc -l <<< "$RANDOM/10000")
-log_text "Starting host $(hostname)"
+log_text "Starting nginx"
 
 # Start nginx
 nginx
