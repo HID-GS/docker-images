@@ -71,21 +71,6 @@ generate_configs() {
 
   done
 
-  for file in $(ls *.conf.tpl); do
-    # if this is a host definition RP, check it
-    if [ "${file:0:5}" == "host." ]; then
-      host=${file:5}
-      host=${host%.conf.tpl}
-      ping -c 1 ${host} &> /dev/null
-      if [ $? -eq 0 ]; then
-        echo "found ${host}"
-        cp ${file} ${file%.tpl}
-      else
-        echo "${file%conf.*} not found"
-      fi
-    fi
-  done
-  log_text "Done generating config files"
 }
 
 ##### common functions END   #####
