@@ -3,6 +3,8 @@ cd /etc/nginx/conf.d
 
 ##### common variables
 semaphore="status_semaphore"
+status_root="status_host"
+status_file="${status_root}_$(hostname)"
 
 ##### common functions START #####
 
@@ -10,6 +12,14 @@ semaphore="status_semaphore"
 log_text() {
   now=$(date "+%Y/%m/%d %H:%M:%S")
   echo "$now - $(hostname) - $@"
+}
+
+# Flag restart of all running nginx instances
+flag_restart() {
+  ls ${status_root}_* | while read file; do
+    echo $1 >> $file
+    log_text "Flagging a restart - $1"
+  done
 }
 
 # Delete old configs that no longer have template files
@@ -76,7 +86,7 @@ generate_configs() {
 semaphore_start() {
   if [ ! -f ${semaphore} ]; then
     log_text "Creating semaphore file ${semaphore}"
-    touch ${semaphore}
+    echo $(hostname) >> ${semaphore}
   fi
 }
 
@@ -84,8 +94,19 @@ semaphore_start() {
 semaphore_stop() {
   if [ -f ${semaphore} ]; then
     log_text "Deleting semaphore file ${semaphore}"
-    touch ${semaphore}
+    rm ${semaphore}
   fi
+}
+
+# Clean up old entries on first run
+first_run() {
+  if [ ! -f ${semaphore} ]; then
+    if [ -f ${status_root}_* ]; then
+      log_text "Cleaning up old status files"
+    fi
+  fi
+  log_text "Creating ${status_file}"
+  touch ${status_file}
 }
 
 ##### common functions END   #####
