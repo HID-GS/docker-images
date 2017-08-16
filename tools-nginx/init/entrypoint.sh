@@ -31,27 +31,33 @@ generate_configs() {
     # Setup basic control variables
     config=${template%.tpl}
 
-    if [ "${template:0:5}" == "host." ]; then
+    if [ "${config:0:5}" == "host." ]; then
+      host=${config:5}
       ping -c 1 $host &> /dev/null
       if [ $? -eq 0 ]; then
         if [ ! -f $config ]; then
-          echo "detected new working host $host, adding it to nginx"
+          log_text "detected new working host $host, adding it to nginx"
           cp $template $config
           restart=1
         else
           diff $config $template &> /dev/null
           if [ $? -ne 0 ]; then
-            echo "detected configuration changes on $host, will tell nginx to restart"
+            log_text "detected configuration changes on $host, will tell nginx to restart"
             cp $template $config
             restart=1
           fi
         fi
       else
         if [ -f $config ]; then
-          echo "detected failed host $host, removing it from nginx"
+          log_text "detected failed host $host, removing it from nginx"
           rm $config
           restart=1
         fi
+      fi
+    else
+      if [ ! -f $config ]; then
+        log_text "detected new configuration $config, enabling it" 
+        cp $template $config
       fi
     fi
 
