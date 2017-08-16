@@ -1,6 +1,9 @@
 #!/usr/bin/env sh
 cd /etc/nginx/conf.d
 
+##### common variables
+semaphore="status_semaphore"
+
 ##### common functions START #####
 
 # Common log function
@@ -67,7 +70,22 @@ generate_configs() {
     fi
 
   done
+}
 
+# Create semaphore file
+semaphore_start() {
+  if [ ! -f ${semaphore} ]; then
+    log_text "Creating semaphore file ${semaphore}"
+    touch ${semaphore}
+  fi
+}
+
+# Remove semaphore file
+semaphore_stop() {
+  if [ -f ${semaphore} ]; then
+    log_text "Deleting semaphore file ${semaphore}"
+    touch ${semaphore}
+  fi
 }
 
 ##### common functions END   #####
@@ -89,5 +107,6 @@ while [ 1 -eq 1 ]; do
 
   # create control variable
   restart=0
+  generate_configs
 
 done
