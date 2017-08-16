@@ -16,6 +16,10 @@ done
 # Start nginx
 nginx
 
+# Get current time
+current_time=$(date +%s)
+
+# Monitor files for changes
 while [ 1 -eq 1 ]; do
 
   sleep 60
@@ -25,6 +29,16 @@ while [ 1 -eq 1 ]; do
   restart=0
 
   ls *.conf.tpl | while read template; do
+  
+    # If the file is changed, flag a restart
+    template_time=$(stat -c %Z $template)
+    if [ $current_time -lt $template_time ]; then
+      restart=1
+      current_time=$(date +%s)
+    fi
+    
+    # If a file is added or removed, flag a restart
+    # If a host status changed, flag a restart
     config=$(echo $template | sed 's/.tpl//g')
     host=$(echo $template | sed 's/.conf.tpl//g')
     ping -c 1 $host &> /dev/null
@@ -50,6 +64,7 @@ while [ 1 -eq 1 ]; do
     fi
   done
 
+  # If a restart is flagged, restart nginx
   if [ $restart -eq 1 ]; then
     echo 'changes detected, reloading nginx'
     #restart nginx
