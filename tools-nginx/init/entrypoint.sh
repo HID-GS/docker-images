@@ -27,15 +27,24 @@ while [ 1 -eq 1 ]; do
   echo "rechecking nginx stanzas"
 
   restart=0
+  file_changed=0
 
   ls *.conf.tpl | while read template; do
   
     # If the file is changed, flag a restart
     template_time=$(stat -c %Z $template)
     if [ $current_time -lt $template_time ]; then
-      restart=1
+      echo "detected changed template $template"
       current_time=$(date +%s)
     fi
+    
+    # If files are changed, flag a restart
+    if [ $file_changed -ne 0 ]; then
+      echo "files changed, flagging a restart"
+      file_changed=0
+      current_time=$(date +%s)
+      restart=1
+     fi
     
     # If a file is added or removed, flag a restart
     # If a host status changed, flag a restart
