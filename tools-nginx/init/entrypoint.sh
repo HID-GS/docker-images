@@ -1,9 +1,6 @@
 #!/usr/bin/env sh
 cd /etc/nginx/conf.d
 
-# stagger process between multiple servers
-sleep $(bc -l <<< "$RANDOM/10000")
-
 ##### common functions START #####
 
 # Common log function
@@ -75,7 +72,9 @@ generate_configs() {
 
 ##### common functions END   #####
 
-
+# stagger process between multiple servers
+sleep $(bc -l <<< "$RANDOM/10000")
+log_text "Starting host $(hostname)"
 
 # Start nginx
 nginx
