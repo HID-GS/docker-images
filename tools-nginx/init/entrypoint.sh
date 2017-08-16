@@ -104,11 +104,16 @@ semaphore_stop() {
 first_run() {
   if [ ! -f ${semaphore} ]; then
     if [ -f ${status_root}_* ]; then
-      log_text "Cleaning up old status files"
+      find ./${status_root}* -mtime +30 | while read status; do
+        log_text "Cleaning up old status file - $status"
+        rm $status
     fi
   fi
-  log_text "Creating ${status_file}"
-  touch ${status_file}
+  
+  if [ ! -f ${status_file}]; then
+    log_text "Creating ${status_file}"
+    touch ${status_file}
+  fi
 }
 
 ##### common functions END   #####
@@ -120,6 +125,7 @@ log_text "Starting nginx"
 # Start nginx
 nginx
 
+first_run
 
 # Monitor files for changes
 while [ 1 -eq 1 ]; do
@@ -129,7 +135,6 @@ while [ 1 -eq 1 ]; do
   echo "rechecking nginx stanzas"
 
   # create control variable
-  restart=0
   generate_configs
 
 done
