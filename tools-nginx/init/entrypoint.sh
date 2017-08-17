@@ -87,8 +87,8 @@ generate_configs() {
     done
     semaphore_stop
   else
-    while [ -f ${semaphore} ]; do
-      log_text "semaphore file detected, waiting of it to go away before continuing"
+    while [ $(ls 2> /dev/null | grep ${semaphore} | wc -l) -gt 0 ]; do
+      log_text "semaphore file detected, waiting for it to go away before continuing"
       sleep 5
     done
     log_text "semaphore file is gone, proceeding..."
@@ -160,5 +160,5 @@ while [ 1 -eq 1 ]; do
 
   sleep 60
   log_text "rechecking nginx stanzas"
-  
+
 done
