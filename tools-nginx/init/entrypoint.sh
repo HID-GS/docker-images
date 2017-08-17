@@ -28,7 +28,7 @@ delete_old_configs() {
     if [ ! -f $file.tpl ]; then
       log_text "Removing templateless configuration $file"
       rm $file
-      flag_restart "removed $file"
+      flag_restart "Removed $file"
     fi
   done
 }
@@ -51,32 +51,32 @@ generate_configs() {
         ping -c 1 $host &> /dev/null
         if [ $? -eq 0 ]; then
           if [ ! -f $config ]; then
-            log_text "detected new working host $host, adding it to nginx"
-            cp $template $config
+            log_text "Detected new working host $host, adding it to nginx"
+            cp $template $Honfig
             flag_restart "host up $config"
           else
             diff $config $template &> /dev/null
             if [ $? -ne 0 ]; then
-              log_text "detected configuration changes on $host, will tell nginx to restart"
+              log_text "Detected configuration changes on $host, will tell nginx to restart"
               cp $template $config
-              flag_restart "change in $config"
+              flag_restart "Change in $config"
             fi
           fi
         elif [ -f $config ]; then
-          log_text "detected failed host $host, removing it from nginx"
+          log_text "Detected failed host $host, removing it from nginx"
           rm $config
-          flag_restart "host down $host"
+          flag_restart "Host down $host"
         fi
       elif [ ! -f $config ]; then
-        log_text "detected new configuration $config, enabling it" 
+        log_text "Detected new configuration $config, enabling it" 
         cp $template $config
-        flag_restart "new $config"
+        flag_restart "New $config"
       else
         diff $config $template &> /dev/null
         if [ $? -ne 0 ]; then
-          log_text "detected configuration changes on $config, will tell nginx to restart"
+          log_text "Detected configuration changes on $config, will tell nginx to restart"
           cp $template $config
-          flag_restart "change in $config"
+          flag_restart "Change in $config"
         fi
       fi
 
@@ -84,10 +84,10 @@ generate_configs() {
     semaphore_stop
   else
     while [ $(ls 2> /dev/null | grep ${semaphore} | wc -l) -gt 0 ]; do
-      log_text "semaphore file detected, waiting for it to go away before continuing"
+      log_text "Semaphore file detected, waiting for it to go away before continuing"
       sleep 5
     done
-    log_text "semaphore file is gone, proceeding..."
+    log_text "Semaphore file is gone, proceeding..."
   fi
   
   # If nginx is not running, start it & reset the status file
@@ -99,7 +99,7 @@ generate_configs() {
     > ${status_file}
   # If a restart is flagged, restart nginx
   elif [ $(cat ${status_file} | wc -l) -gt 0 ]; then
-    log_text 'changes detected, reloading nginx'
+    log_text 'Changes detected, reloading nginx'
     # reset status file
     > ${status_file}
   fi
@@ -137,7 +137,7 @@ touch_status_file() {
   # Create and touch ours
   if [ ! -f ${status_file} ]; then
     # flag restart on new file
-    flag_restart "creating new ${status_file}"
+    flag_restart "Creating new ${status_file}"
   fi
   touch ${status_file}
 }
@@ -155,6 +155,6 @@ while [ 1 -eq 1 ]; do
   generate_configs
 
   sleep 60
-  log_text "rechecking nginx stanzas"
+  log_text "Rechecking nginx stanzas"
 
 done
