@@ -28,7 +28,7 @@ delete_old_configs() {
     if [ ! -f $file.tpl ]; then
       log_text "Removing templateless configuration $file"
       rm $file
-      flag_restart "removed $config"
+      flag_restart "removed $file"
     fi
   done
 }
