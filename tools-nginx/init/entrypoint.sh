@@ -93,18 +93,17 @@ generate_configs() {
     done
     log_text "semaphore file is gone, proceeding..."
   fi
-
+  
+  # If nginx is not running, start it & reset the status file
+  pidof nginx > /dev/null
+  if [ $? -ne 0 ]; then
+    # start nginx
+    nginx
+    # reset status file
+    > ${status_file}
   # If a restart is flagged, restart nginx
-  if [ $(cat ${status_file} | wc -l) -gt 0 ]; then
+  elif [ $(cat ${status_file} | wc -l) -gt 0 ]; then
     log_text 'changes detected, reloading nginx'
-    pidof nginx > /dev/null
-    if [ $? -eq 0 ]; then
-      #restart nginx
-      nginx -s reload
-    else
-      #start nginx
-      nginx
-    fi
     # reset status file
     > ${status_file}
   fi
