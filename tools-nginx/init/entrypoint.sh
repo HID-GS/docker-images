@@ -96,7 +96,7 @@ generate_configs() {
 
   # If a restart is flagged, restart nginx
   if [ $(cat ${status_file} | wc -l) -gt 0 ]; then
-    echo 'changes detected, reloading nginx'
+    log_text 'changes detected, reloading nginx'
     #restart nginx
     nginx -s reload
     # reset status file
