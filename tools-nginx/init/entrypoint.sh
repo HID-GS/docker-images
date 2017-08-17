@@ -62,25 +62,21 @@ generate_configs() {
               flag_restart "change in $config"
             fi
           fi
-        else
-          if [ -f $config ]; then
-            log_text "detected failed host $host, removing it from nginx"
-            rm $config
-            flag_restart "host down $host"
-          fi
+        elif [ -f $config ]; then
+          log_text "detected failed host $host, removing it from nginx"
+          rm $config
+          flag_restart "host down $host"
         fi
+      elif [ ! -f $config ]; then
+        log_text "detected new configuration $config, enabling it" 
+        cp $template $config
+        flag_restart "new $config"
       else
-        if [ ! -f $config ]; then
-          log_text "detected new configuration $config, enabling it" 
+        diff $config $template &> /dev/null
+        if [ $? -ne 0 ]; then
+          log_text "detected configuration changes on $config, will tell nginx to restart"
           cp $template $config
-          flag_restart "new $config"
-        else
-          diff $config $template &> /dev/null
-          if [ $? -ne 0 ]; then
-            log_text "detected configuration changes on $config, will tell nginx to restart"
-            cp $template $config
-            flag_restart "change in $config"
-          fi
+          flag_restart "change in $config"
         fi
       fi
 
