@@ -16,7 +16,7 @@ log_text() {
 
 # Flag restart of all running nginx instances
 flag_restart() {
-  ls ${status_root}.* | while read file; do
+  ls ${status_root}.* 2> /dev/null | while read file; do
     echo "$@" >> $file
     log_text "Restart flagged - $@"
   done
