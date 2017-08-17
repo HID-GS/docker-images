@@ -58,7 +58,7 @@ generate_configs() {
         if [ $? -eq 0 ]; then
           if [ ! -f $config ]; then
             log_text "Detected new working host $host, adding it to nginx"
-            cp $template $Honfig
+            cp $template $config
             flag_restart "host up $config"
           else
             diff $config $template &> /dev/null
