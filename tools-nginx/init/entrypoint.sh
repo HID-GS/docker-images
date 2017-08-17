@@ -125,7 +125,7 @@ touch_status_file() {
 
   # Clean up old files
   if [ ! -f ${semaphore} ]; then
-    if [ $(ls ${status_root}.* | wc -l ) -gt 0 ]; then
+    if [ $(ls ${status_root}.* 2> /dev/null | wc -l ) -gt 0 ]; then
       find ./${status_root}* -mtime +1 | while read status; do
         log_text "Cleaning up old status file - $status"
         rm $status
