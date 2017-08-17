@@ -2,9 +2,9 @@
 cd /etc/nginx/conf.d
 
 ##### common variables
-semaphore="status_semaphore"
+semaphore="status_semaphore.run"
 status_root="status_host"
-status_file="${status_root}_$(hostname)"
+status_file="${status_root}.$(hostname)"
 
 ##### common functions START #####
 
@@ -16,7 +16,7 @@ log_text() {
 
 # Flag restart of all running nginx instances
 flag_restart() {
-  ls ${status_root}_* | while read file; do
+  ls ${status_root}.* | while read file; do
     echo "$@" >> $file
     log_text "Restart flagged - $@"
   done
@@ -88,7 +88,7 @@ generate_configs() {
     semaphore_stop
   else
     while [ -f ${semaphore} ]; do
-      log_text "semaphore file detected, waiting of it to go away before"
+      log_text "semaphore file detected, waiting of it to go away before continuing"
       sleep 5
     done
     log_text "semaphore file is gone, proceeding..."
@@ -125,7 +125,7 @@ touch_status_file() {
 
   # Clean up old files
   if [ ! -f ${semaphore} ]; then
-    if [ -f ${status_root}_* ]; then
+    if [ $(ls ${status_root}.* | wc -l ) -gt 0 ]; then
       find ./${status_root}* -mtime +1 | while read status; do
         log_text "Cleaning up old status file - $status"
         rm $status
