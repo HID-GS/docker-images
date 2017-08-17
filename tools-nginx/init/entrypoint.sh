@@ -136,7 +136,8 @@ touch_status_file() {
 
   # Create and touch ours
   if [ ! -f ${status_file} ]; then
-    log_text "Creating ${status_file}"
+    # flag restart on new file
+    flag_restart "creating new ${status_file}"
   fi
   touch ${status_file}
 }
