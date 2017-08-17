@@ -97,8 +97,14 @@ generate_configs() {
   # If a restart is flagged, restart nginx
   if [ $(cat ${status_file} | wc -l) -gt 0 ]; then
     log_text 'changes detected, reloading nginx'
-    #restart nginx
-    nginx -s reload
+    pidof nginx > /dev/null
+    if [ $? -eq 0 ]; then
+      #restart nginx
+      nginx -s reload
+    else
+      #start nginx
+      nginx
+    fi
     # reset status file
     > ${status_file}
   fi
@@ -146,20 +152,13 @@ touch_status_file() {
 sleep $(echo "$RANDOM/10000" | bc -l)
 log_text "Starting nginx"
 
-# Start nginx
-generate_configs
-nginx
-
-touch_status_file
-
 # Monitor files for changes
 while [ 1 -eq 1 ]; do
-
-  sleep 60
-
-  log_text "rechecking nginx stanzas"
 
   # create control variable
   generate_configs
 
+  sleep 60
+  log_text "rechecking nginx stanzas"
+  
 done
