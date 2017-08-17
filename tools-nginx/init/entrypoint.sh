@@ -22,6 +22,12 @@ flag_restart() {
   done
 }
 
+# Flag restart of only this running nginx instance
+flag_restart_single() {
+  echo "$@" >> ${status_file}
+  log_text "Restart single flagged - $@"
+}
+
 # Delete old configs that no longer have template files
 delete_old_configs() {
   find . -type f -name '*.conf' | while read file; do
@@ -137,7 +143,7 @@ touch_status_file() {
   # Create and touch ours
   if [ ! -f ${status_file} ]; then
     # flag restart on new file
-    flag_restart "Creating new ${status_file}"
+    flag_restart_single "Creating new ${status_file}"
   fi
   touch ${status_file}
 }
