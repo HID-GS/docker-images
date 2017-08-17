@@ -147,6 +147,7 @@ sleep $(echo "$RANDOM/10000" | bc -l)
 log_text "Starting nginx"
 
 # Start nginx
+generate_configs
 nginx
 
 touch_status_file
