@@ -16,6 +16,7 @@ RUN apk update \
           libpng-dev \
           librsvg-dev \
           libxslt-dev \
+          mariadb-client \
     && docker-php-ext-install -j$(nproc) exif iconv mbstring mcrypt opcache pdo pdo_mysql sockets zip xsl\
     && docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
     && docker-php-ext-install -j$(nproc) gd
