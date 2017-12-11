@@ -116,7 +116,7 @@ generate_configs() {
 # Check semaphore file freshness
 semaphore_check_freshness() {
   if [ -f ${semaphore} ]; then
-    file_timestamp=$(stat -c %Z ${semaphore})
+    file_timestamp=$(stat -c %Y ${semaphore})
     now=$(date +%s)
     file_age=$(expr $now - $file_timestamp)
     age_limit=3600
