@@ -33,7 +33,7 @@ delete_old_configs() {
   find . -type f -name '*.conf' | while read file; do
     if [ ! -f $file.tpl ]; then
       log_text "Removing templateless configuration $file"
-      rm $file
+      rm -f $file
       flag_restart "Removed $file"
     fi
   done
@@ -42,6 +42,7 @@ delete_old_configs() {
 # Generate new configs from templates
 generate_configs() {
   touch_status_file
+  semaphore_check_freshness
   if [ ! -f ${semaphore} ]; then
     semaphore_start
     delete_old_configs
@@ -70,7 +71,7 @@ generate_configs() {
           fi
         elif [ -f $config ]; then
           log_text "Detected failed host $host, removing it from nginx"
-          rm $config
+          rm -f $config
           flag_restart "Host down $host"
         fi
       elif [ ! -f $config ]; then
@@ -112,6 +113,19 @@ generate_configs() {
   fi
 }
 
+# Check semaphore file freshness
+semaphore_check_freshness() {
+  if [ -f ${semaphore} ]; then
+    file_timestamp=$(stat -c %Z ${semaphore})
+    now=$(date +%s)
+    file_age=$(expr $now - $file_timestamp)
+    age_limit=3600
+    if [ $file_age -gt $age_limit ]; then
+      rm -f ${semaphore}
+    fi
+  fi
+}
+
 # Create semaphore file
 semaphore_start() {
   if [ ! -f ${semaphore} ]; then
@@ -124,7 +138,7 @@ semaphore_start() {
 semaphore_stop() {
   if [ -f ${semaphore} ]; then
     log_text "Deleting semaphore file ${semaphore}"
-    rm ${semaphore}
+    rm -f ${semaphore}
   fi
 }
 
@@ -136,7 +150,7 @@ touch_status_file() {
     if [ $(ls ${status_root}.* 2> /dev/null | wc -l ) -gt 0 ]; then
       find ./${status_root}* -mtime +1 | while read status; do
         log_text "Cleaning up old status file - $status"
-        rm $status
+        rm -f $status
       done
     fi
   fi
