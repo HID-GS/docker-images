@@ -41,8 +41,8 @@ delete_old_configs() {
 
 # Generate new configs from templates
 generate_configs() {
-  touch_status_file
   semaphore_check_freshness
+  touch_status_file
   if [ ! -f ${semaphore} ]; then
     semaphore_start
     delete_old_configs
