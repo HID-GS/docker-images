@@ -121,6 +121,7 @@ semaphore_check_freshness() {
     file_age=$(expr $now - $file_timestamp)
     age_limit=3600
     if [ $file_age -gt $age_limit ]; then
+      log_text "Found stale semaphore file. Killing it."
       rm -f ${semaphore}
     fi
   fi
