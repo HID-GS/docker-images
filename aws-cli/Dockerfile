@@ -7,7 +7,7 @@ RUN apk --update add --no-cache \
 				py-pip \
 				groff \
 				&& \
-		pip install --upgrade awscli==${AWSCLI_VERSION}
+		pip install --upgrade awscli==${AWSCLI_VERSION} awsebcli
 
 WORKDIR /data
 
