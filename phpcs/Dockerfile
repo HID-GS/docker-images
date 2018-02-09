@@ -1,8 +1,7 @@
 FROM alpine:3.7
 
-ENV COMPOSER_ALLOW_SUPERUSER 1
-ENV COMPOSER_HOME /root/.composer
-ENV PATH $PATH:/root/.composer/vendor/bin
+ENV COMPOSER_HOME /usr/local/bin
+ENV PATH $PATH:${COMPOSER_HOME}/vendor/bin
 
 RUN apk update && apk add --no-cache \
     curl \
@@ -16,9 +15,11 @@ RUN apk update && apk add --no-cache \
     php7-simplexml \
     php7-tokenizer \
     php7-xml \
+    php7-xmlwriter \
     php7-zlib \
-    && curl --silent --show-error https://getcomposer.org/installer | php \
-    && php composer.phar global require drupal/coder \
+    && curl --silent --show-error https://getcomposer.org/installer | php -- --install-dir=${COMPOSER_HOME} --filename=composer \
+    && chmod +x ${COMPOSER_HOME}/composer \
+    && composer global require drupal/coder \
     && phpcs --config-set installed_paths ${COMPOSER_HOME}/vendor/drupal/coder/coder_sniffer
 
 WORKDIR /app
