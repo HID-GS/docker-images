@@ -8,6 +8,7 @@ RUN apk update && apk add --no-cache \
     git \
     php7 \
     php7-ctype \
+    php7-dom \
     php7-iconv \
     php7-json \
     php7-mbstring \
