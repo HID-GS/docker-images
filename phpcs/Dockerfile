@@ -7,6 +7,7 @@ RUN apk update && apk add --no-cache \
     curl \
     git \
     php7 \
+    php7-ctype \
     php7-iconv \
     php7-json \
     php7-mbstring \
@@ -18,8 +19,8 @@ RUN apk update && apk add --no-cache \
     php7-xmlwriter \
     php7-zlib \
     && curl --silent --show-error https://getcomposer.org/installer | php -- --install-dir=${COMPOSER_HOME} --filename=composer \
-    && chmod +x ${COMPOSER_HOME}/composer \
     && composer global require drupal/coder \
+    && composer global require phpmd/phpmd \
     && phpcs --config-set installed_paths ${COMPOSER_HOME}/vendor/drupal/coder/coder_sniffer
 
 WORKDIR /app
