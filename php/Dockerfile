@@ -21,7 +21,7 @@ RUN apk update \
     && docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
     && docker-php-ext-install -j$(nproc) gd
 
-RUN pecl install imagick redis xdebug \
+RUN pecl install imagick redis xdebug xhprof-beta \
     && docker-php-ext-enable imagick redis xdebug \
     && apk del .build-deps
 # set recommended PHP.ini settings
