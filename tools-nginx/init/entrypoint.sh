@@ -55,24 +55,17 @@ generate_configs() {
       if [ "${config:0:5}" == "host." ]; then
         host=${config:5}
         host=${host%.conf}
-        ping -c 1 $host &> /dev/null
-        if [ $? -eq 0 ]; then
-          if [ ! -f $config ]; then
-            log_text "Detected new working host $host, adding it to nginx"
+        if [ ! -f $config ]; then
+          log_text "Detected new working host $host, adding it to nginx"
+          cp $template $config
+          flag_restart "host up $config"
+        else
+          diff $config $template &> /dev/null
+          if [ $? -ne 0 ]; then
+            log_text "Detected configuration changes on $host, will tell nginx to restart"
             cp $template $config
-            flag_restart "host up $config"
-          else
-            diff $config $template &> /dev/null
-            if [ $? -ne 0 ]; then
-              log_text "Detected configuration changes on $host, will tell nginx to restart"
-              cp $template $config
-              flag_restart "Change in $config"
-            fi
+            flag_restart "Change in $config"
           fi
-        elif [ -f $config ]; then
-          log_text "Detected failed host $host, removing it from nginx"
-          rm -f $config
-          flag_restart "Host down $host"
         fi
       elif [ ! -f $config ]; then
         log_text "Detected new configuration $config, enabling it" 
