@@ -16,13 +16,14 @@ RUN apk update \
           libpng-dev \
           librsvg-dev \
           libxslt-dev \
+					libzip-dev \
           mariadb-client \
-    && docker-php-ext-install -j$(nproc) exif iconv mbstring mcrypt opcache pdo pdo_mysql sockets zip xsl\
+    && docker-php-ext-install -j$(nproc) exif iconv mbstring opcache pdo pdo_mysql sockets zip xsl \
     && docker-php-ext-configure gd --with-freetype-dir=/usr/include/ --with-jpeg-dir=/usr/include/ \
     && docker-php-ext-install -j$(nproc) gd
 
-RUN pecl install imagick redis xdebug xhprof-beta \
-    && docker-php-ext-enable imagick redis xdebug \
+RUN pecl install imagick mcrypt redis xdebug \
+    && docker-php-ext-enable imagick mcrypt redis xdebug \
     && apk del .build-deps
 # set recommended PHP.ini settings
 # see https://secure.php.net/manual/en/opcache.installation.php
